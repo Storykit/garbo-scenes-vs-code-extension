@@ -3,6 +3,7 @@ import type { StorykitApi } from '../api/storykitApi';
 import { loadComponentHtml } from './htmlLoader';
 import { writeUsernameFile } from './writeUsernameFile';
 import { exportDefinitionByTypeName } from './exportDefinition';
+import { inferNameFromActiveFile } from './inferNameFromActiveFile';
 
 type WebviewMessage =
   | { type: 'login' }
@@ -50,14 +51,23 @@ export class AccountViewProvider implements vscode.WebviewViewProvider {
             this.view?.webview.postMessage({ type: 'error', message: (err as Error).message });
           }
           break;
-        case 'exportDefinition':
+        case 'exportDefinition': {
+          const name = message.name.trim() || inferNameFromActiveFile();
+          if (!name) {
+            this.view?.webview.postMessage({
+              type: 'error',
+              message: 'No name given, and no active file to infer one from.',
+            });
+            break;
+          }
           try {
-            const path = await exportDefinitionByTypeName(this.storykitApi, message.name);
+            const path = await exportDefinitionByTypeName(this.storykitApi, name);
             this.view?.webview.postMessage({ type: 'exportDefinitionResult', path });
           } catch (err) {
             this.view?.webview.postMessage({ type: 'error', message: (err as Error).message });
           }
           break;
+        }
       }
     });
 
