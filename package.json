@@ -1,0 +1,101 @@
+{
+  "name": "definition-extension",
+  "displayName": "Definition Extension",
+  "description": "VS Code extension boilerplate with JWT-based authentication",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "definitionExtension.showLogs",
+        "title": "Definition Extension: Show Request Logs"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "definitionExtension",
+          "title": "Definition Extension",
+          "icon": "media/icon.png"
+        }
+      ]
+    },
+    "views": {
+      "definitionExtension": [
+        {
+          "type": "webview",
+          "id": "definitionExtension.loginView",
+          "name": "Account",
+          "icon": "media/icon.png"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Definition Extension",
+      "properties": {
+        "definitionExtension.auth0Domain": {
+          "type": "string",
+          "default": "auth.storykit-stage.io",
+          "description": "Auth0 tenant domain (no protocol), e.g. your-tenant.us.auth0.com."
+        },
+        "definitionExtension.auth0ClientId": {
+          "type": "string",
+          "default": "McKVwrlrOoNt6uTzFj9IQTZZpE9m80iD",
+          "description": "Auth0 application Client ID (Native/SPA app, PKCE-enabled)."
+        },
+        "definitionExtension.auth0Audience": {
+          "type": "string",
+          "default": "storykit-stage-api",
+          "description": "Auth0 API identifier (audience). Required to get a JWT access token instead of an opaque one."
+        },
+        "definitionExtension.auth0Scope": {
+          "type": "string",
+          "default": "openid profile email offline_access",
+          "description": "OAuth scopes to request. Include offline_access to receive a refresh token."
+        },
+        "definitionExtension.callbackPort": {
+          "type": "number",
+          "default": 42813,
+          "description": "Fixed loopback port for the OAuth callback. Must match an Allowed Callback URL registered in Auth0: http://127.0.0.1:<port>/callback."
+        },
+        "definitionExtension.apiBaseUrl": {
+          "type": "string",
+          "default": "https://cws.storykit-stage.io",
+          "description": "Base URL for authenticated API requests."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "esbuild ./src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node",
+    "watch": "npm run compile -- --watch",
+    "package": "vsce package",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@jsonforms/core": "^3.8.0",
+    "@types/node": "^22.20.2",
+    "@types/vscode": "^1.85.0",
+    "@typescript-eslint/eslint-plugin": "^8.70.0",
+    "@typescript-eslint/parser": "^8.70.0",
+    "esbuild": "^0.28.2",
+    "eslint": "^10.10.0",
+    "eslint-config-prettier": "^10.1.8",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.70.0"
+  },
+  "dependencies": {
+    "ajv": "^8.20.0",
+    "axios": "^1.6.7"
+  }
+}

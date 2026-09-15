@@ -1,0 +1,12 @@
+body { font-family: var(--vscode-font-family); padding: 0 4px; }
+button {
+  margin-top: 8px;
+  width: 100%;
+  background: var(--vscode-button-background);
+  color: var(--vscode-button-foreground);
+  border: none;
+  padding: 6px;
+  cursor: pointer;
+}
+button:hover { background: var(--vscode-button-hoverBackground); }
+#error { color: var(--vscode-errorForeground); font-size: 12px; margin-top: 8px; min-height: 14px; }
