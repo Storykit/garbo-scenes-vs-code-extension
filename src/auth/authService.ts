@@ -2,9 +2,7 @@ import * as vscode from "vscode";
 import { waitForCallback } from "./loopbackServer";
 import { createPkcePair, createState } from "./pkce";
 import { outputChannel, logRequest, logResponse } from "../logging";
-
-const ACCESS_TOKEN_KEY = "definitionExtension.accessToken";
-const REFRESH_TOKEN_KEY = "definitionExtension.refreshToken";
+import type { Environment } from "../environment";
 
 interface TokenResponse {
   access_token: string;
@@ -28,10 +26,19 @@ export class AuthService {
   private readonly _onDidChangeSession = new vscode.EventEmitter<void>();
   readonly onDidChangeSession = this._onDidChangeSession.event;
 
-  constructor(private readonly secrets: vscode.SecretStorage) {}
+  private readonly accessTokenKey: string;
+  private readonly refreshTokenKey: string;
+
+  constructor(
+    private readonly secrets: vscode.SecretStorage,
+    private readonly environment: Environment,
+  ) {
+    this.accessTokenKey = `definitionExtension.accessToken.${environment}`;
+    this.refreshTokenKey = `definitionExtension.refreshToken.${environment}`;
+  }
 
   async getAccessToken(): Promise<string | undefined> {
-    return this.secrets.get(ACCESS_TOKEN_KEY);
+    return this.secrets.get(this.accessTokenKey);
   }
 
   async isSignedIn(): Promise<boolean> {
@@ -39,11 +46,11 @@ export class AuthService {
   }
 
   private getAuth0Config(): Auth0Config {
-    const config = vscode.workspace.getConfiguration("definitionExtension");
+    const config = vscode.workspace.getConfiguration(`definitionExtension.${this.environment}`);
     const rawDomain = config.get<string>("auth0Domain");
     const clientId = config.get<string>("auth0ClientId");
     if (!rawDomain || !clientId) {
-      throw new Error("definitionExtension.auth0Domain and auth0ClientId must be configured.");
+      throw new Error(`definitionExtension.${this.environment}.auth0Domain and auth0ClientId must be configured.`);
     }
     return {
       // Bare domain (production Auth0) defaults to https; an explicit
@@ -68,7 +75,7 @@ export class AuthService {
     const config = vscode.workspace.getConfiguration("definitionExtension");
     const port = config.get<number>("callbackPort") ?? 42813;
     const { result } = await waitForCallback(port);
-    const redirectUri = `http://127.0.0.1:${port}/callback`;
+    const redirectUri = `http://localhost:4201/extension/redirect`;
 
     const authorizeUrl = new URL(`${auth0.origin}/authorize`);
     authorizeUrl.searchParams.set("response_type", "code");
@@ -124,7 +131,7 @@ export class AuthService {
    * back to prompting the user to sign in again.
    */
   async refresh(): Promise<string> {
-    const refreshToken = await this.secrets.get(REFRESH_TOKEN_KEY);
+    const refreshToken = await this.secrets.get(this.refreshTokenKey);
     if (!refreshToken) {
       throw new Error("No refresh token available.");
     }
@@ -155,15 +162,15 @@ export class AuthService {
   }
 
   async logout(): Promise<void> {
-    await this.secrets.delete(ACCESS_TOKEN_KEY);
-    await this.secrets.delete(REFRESH_TOKEN_KEY);
+    await this.secrets.delete(this.accessTokenKey);
+    await this.secrets.delete(this.refreshTokenKey);
     this._onDidChangeSession.fire();
   }
 
   private async storeTokens(tokens: TokenResponse): Promise<void> {
-    await this.secrets.store(ACCESS_TOKEN_KEY, tokens.access_token);
+    await this.secrets.store(this.accessTokenKey, tokens.access_token);
     if (tokens.refresh_token) {
-      await this.secrets.store(REFRESH_TOKEN_KEY, tokens.refresh_token);
+      await this.secrets.store(this.refreshTokenKey, tokens.refresh_token);
     }
     this._onDidChangeSession.fire();
   }

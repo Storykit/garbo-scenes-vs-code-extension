@@ -4,13 +4,14 @@
   <link rel="stylesheet" href="{{styleUri}}">
 </head>
 <body>
+  <div class="env-tabs">{{tabsHtml}}</div>
   <p>Signed in.</p>
-  <button id="fetchUser" class="secondary">Get current user</button>
   <input id="definitionTypeName" type="text" placeholder="Definition type name">
   <button id="exportDefinition" class="secondary">Export definition</button>
-  <button id="logout">Sign out</button>
+  <button id="generateData" class="secondary">Generate data</button>
   <div id="error"></div>
   <pre id="result"></pre>
+  <button id="logout">Sign out</button>
   <script src="{{scriptUri}}"></script>
 </body>
 </html>

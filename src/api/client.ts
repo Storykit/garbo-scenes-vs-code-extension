@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import axios, { type AxiosInstance } from 'axios';
 import type { AuthService } from '../auth/authService';
+import type { Environment } from '../environment';
 import { outputChannel, logRequest, logResponse, logError } from '../logging';
 
 function formatBody(data: unknown): string {
@@ -18,8 +19,8 @@ function formatBody(data: unknown): string {
  * Axios instance that attaches the stored JWT to every request and retries
  * once via refresh() on a 401 before giving up.
  */
-export function createApiClient(authService: AuthService): AxiosInstance {
-  const config = vscode.workspace.getConfiguration('definitionExtension');
+export function createApiClient(authService: AuthService, environment: Environment): AxiosInstance {
+  const config = vscode.workspace.getConfiguration(`definitionExtension.${environment}`);
   const client = axios.create({ baseURL: config.get<string>('apiBaseUrl') });
 
   client.interceptors.request.use(async (req) => {

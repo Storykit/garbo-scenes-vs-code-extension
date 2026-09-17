@@ -1,10 +1,5 @@
 import type { JsonSchema, UISchemaElement } from "@jsonforms/core";
 
-export interface CurrentUser {
-  firstName?: string;
-  lastName?: string;
-}
-
 export type TVideoDefinitionAccessCategory = "basic" | "premium" | "custom";
 export interface IPreview {
   /**

@@ -40,35 +40,60 @@
     "configuration": {
       "title": "Definition Extension",
       "properties": {
-        "definitionExtension.auth0Domain": {
-          "type": "string",
-          "default": "auth.storykit-stage.io",
-          "description": "Auth0 tenant domain (no protocol), e.g. your-tenant.us.auth0.com."
-        },
-        "definitionExtension.auth0ClientId": {
-          "type": "string",
-          "default": "McKVwrlrOoNt6uTzFj9IQTZZpE9m80iD",
-          "description": "Auth0 application Client ID (Native/SPA app, PKCE-enabled)."
-        },
-        "definitionExtension.auth0Audience": {
-          "type": "string",
-          "default": "storykit-stage-api",
-          "description": "Auth0 API identifier (audience). Required to get a JWT access token instead of an opaque one."
-        },
-        "definitionExtension.auth0Scope": {
-          "type": "string",
-          "default": "openid profile email offline_access",
-          "description": "OAuth scopes to request. Include offline_access to receive a refresh token."
-        },
         "definitionExtension.callbackPort": {
           "type": "number",
           "default": 42813,
-          "description": "Fixed loopback port for the OAuth callback. Must match an Allowed Callback URL registered in Auth0: http://127.0.0.1:<port>/callback."
+          "description": "Fixed loopback port for the OAuth callback. Must match an Allowed Callback URL registered in Auth0: http://127.0.0.1:<port>/callback. Shared by both environments."
         },
-        "definitionExtension.apiBaseUrl": {
+        "definitionExtension.stage.auth0Domain": {
+          "type": "string",
+          "default": "auth.storykit-stage.io",
+          "description": "Stage: Auth0 tenant domain (no protocol), e.g. your-tenant.us.auth0.com."
+        },
+        "definitionExtension.stage.auth0ClientId": {
+          "type": "string",
+          "default": "McKVwrlrOoNt6uTzFj9IQTZZpE9m80iD",
+          "description": "Stage: Auth0 application Client ID (Native/SPA app, PKCE-enabled)."
+        },
+        "definitionExtension.stage.auth0Audience": {
+          "type": "string",
+          "default": "storykit-stage-api",
+          "description": "Stage: Auth0 API identifier (audience). Required to get a JWT access token instead of an opaque one."
+        },
+        "definitionExtension.stage.auth0Scope": {
+          "type": "string",
+          "default": "openid profile email offline_access",
+          "description": "Stage: OAuth scopes to request. Include offline_access to receive a refresh token."
+        },
+        "definitionExtension.stage.apiBaseUrl": {
           "type": "string",
           "default": "https://cws.storykit-stage.io",
-          "description": "Base URL for authenticated API requests."
+          "description": "Stage: Base URL for authenticated API requests."
+        },
+        "definitionExtension.production.auth0Domain": {
+          "type": "string",
+          "default": "auth.storykit.io",
+          "description": "Production: Auth0 tenant domain (no protocol), e.g. your-tenant.us.auth0.com."
+        },
+        "definitionExtension.production.auth0ClientId": {
+          "type": "string",
+          "default": "sguXBRlFcHsb5JKNMXytpRLv5YuIy2HW",
+          "description": "Production: Auth0 application Client ID (Native/SPA app, PKCE-enabled)."
+        },
+        "definitionExtension.production.auth0Audience": {
+          "type": "string",
+          "default": "storykit-api",
+          "description": "Production: Auth0 API identifier (audience). Required to get a JWT access token instead of an opaque one."
+        },
+        "definitionExtension.production.auth0Scope": {
+          "type": "string",
+          "default": "openid profile email offline_access",
+          "description": "Production: OAuth scopes to request. Include offline_access to receive a refresh token."
+        },
+        "definitionExtension.production.apiBaseUrl": {
+          "type": "string",
+          "default": "https://cws.storykit.io",
+          "description": "Production: Base URL for authenticated API requests."
         }
       }
     }

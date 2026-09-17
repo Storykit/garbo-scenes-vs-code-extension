@@ -1,6 +1,6 @@
 import type { AxiosInstance } from "axios";
 import type { AuthService } from "../auth/authService";
-import type { CurrentUser, DefinitionGroup, SlideDefinitionType } from "./types";
+import type { DefinitionGroup, SlideDefinitionType } from "./types";
 
 /**
  * Generic facade over all Storykit backend interaction (auth actions +
@@ -27,11 +27,6 @@ export class StorykitApi {
 
   isSignedIn(): Promise<boolean> {
     return this.authService.isSignedIn();
-  }
-
-  async getCurrentUser(): Promise<CurrentUser> {
-    const { data } = await this.apiClient.get<CurrentUser>("/user/current");
-    return data;
   }
 
   async getSlideDefinitionTypes(): Promise<SlideDefinitionType[]> {

@@ -22,6 +22,15 @@ export function waitForCallback(port: number, timeoutMs = 120_000): Promise<{ re
       }, timeoutMs);
 
       server.on('request', (req, res) => {
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Private-Network', 'true');
+
+        if (req.method === 'OPTIONS') {
+          res.writeHead(204);
+          res.end();
+          return;
+        }
+
         const url = new URL(req.url ?? '/', 'http://localhost');
         const error = url.searchParams.get('error_description') ?? url.searchParams.get('error');
         const code = url.searchParams.get('code');

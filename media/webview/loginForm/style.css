@@ -9,4 +9,17 @@ button {
   cursor: pointer;
 }
 button:hover { background: var(--vscode-button-hoverBackground); }
+.env-tabs { display: flex; gap: 4px; }
+.env-tab {
+  margin-top: 0;
+  flex: 1;
+  background: var(--vscode-button-secondaryBackground);
+  color: var(--vscode-button-secondaryForeground);
+  border: none;
+  padding: 4px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.env-tab:hover { background: var(--vscode-button-secondaryHoverBackground); }
+.env-tab.active { background: var(--vscode-button-background); color: var(--vscode-button-foreground); }
 #error { color: var(--vscode-errorForeground); font-size: 12px; margin-top: 8px; min-height: 14px; }
