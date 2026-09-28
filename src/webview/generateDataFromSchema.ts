@@ -1,7 +1,8 @@
 import * as vscode from "vscode";
 import { createDefaultDataFromDataSchema } from "./helpers";
+import type { JsonWriter } from "./jsonWriter";
 
-export async function generateDataFromSchema(dirName: string): Promise<string> {
+export async function generateDataFromSchema(dirName: string, writer: JsonWriter): Promise<void> {
   const root = vscode.workspace.workspaceFolders?.[0];
   if (!root) {
     throw new Error("No workspace folder open.");
@@ -19,7 +20,5 @@ export async function generateDataFromSchema(dirName: string): Promise<string> {
   }
 
   const data = createDefaultDataFromDataSchema(dataSchema);
-  const dataUri = vscode.Uri.joinPath(dirUri, "data.json");
-  await vscode.workspace.fs.writeFile(dataUri, new TextEncoder().encode(JSON.stringify(data, null, 2)));
-  return dataUri.fsPath;
+  await writer.write(vscode.Uri.joinPath(dirUri, "data.json"), data);
 }

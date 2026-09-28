@@ -1,16 +1,24 @@
 import * as vscode from "vscode";
 import type { StorykitApi } from "../api/storykitApi";
 import { ENVIRONMENTS, ENVIRONMENT_LABELS, type Environment } from "../environment";
+import { logMessage } from "../logging";
 import { loadComponentHtml } from "./htmlLoader";
-import { exportDefinitionByTypeName } from "./exportDefinition";
+import {
+  exportDefinitionByTypeName,
+  exportDefinitionVariablesByTypeName,
+  fetchDefinitionCatalog,
+} from "./exportDefinition";
 import { generateDataFromSchema } from "./generateDataFromSchema";
 import { inferNameFromActiveFile } from "./inferNameFromActiveFile";
+import { JsonWriter } from "./jsonWriter";
+import { listTopLevelDirectories } from "./listTopLevelDirectories";
+
+type Operation = "exportDefinition" | "exportVariables" | "generateData";
 
 type WebviewMessage =
   | { type: "login" }
   | { type: "logout" }
-  | { type: "exportDefinition"; name: string }
-  | { type: "generateData"; name: string }
+  | { type: "runOperation"; operation: Operation; name: string; allDirectories: boolean; onlyIfEmpty: boolean }
   | { type: "switchEnvironment"; environment: Environment };
 
 export class AccountViewProvider implements vscode.WebviewViewProvider {
@@ -49,50 +57,82 @@ export class AccountViewProvider implements vscode.WebviewViewProvider {
           try {
             await this.activeApi.login();
           } catch (err) {
-            this.view?.webview.postMessage({ type: "error", message: (err as Error).message });
+            this.postError((err as Error).message);
           }
           break;
         case "logout":
           await this.activeApi.logout();
           break;
-        case "exportDefinition": {
-          const name = message.name.trim() || inferNameFromActiveFile();
-          if (!name) {
-            this.view?.webview.postMessage({
-              type: "error",
-              message: "No name given, and no active file to infer one from.",
-            });
-            break;
-          }
+        case "runOperation":
           try {
-            const path = await exportDefinitionByTypeName(this.activeApi, name);
-            this.view?.webview.postMessage({ type: "exportDefinitionResult", path });
+            await this.runOperation(message);
           } catch (err) {
-            this.view?.webview.postMessage({ type: "error", message: (err as Error).message });
+            this.postError((err as Error).message);
           }
           break;
-        }
-        case "generateData": {
-          const name = message.name.trim() || inferNameFromActiveFile();
-          if (!name) {
-            this.view?.webview.postMessage({
-              type: "error",
-              message: "No name given, and no active file to infer one from.",
-            });
-            break;
-          }
-          try {
-            const path = await generateDataFromSchema(name);
-            this.view?.webview.postMessage({ type: "generateDataResult", path });
-          } catch (err) {
-            this.view?.webview.postMessage({ type: "error", message: (err as Error).message });
-          }
-          break;
-        }
       }
     });
 
     void this.render();
+  }
+
+  /**
+   * Runs the operation on one directory (the given name, or the one inferred
+   * from the active file) or on every top-level directory. cws data is
+   * fetched once up front and shared; a failing directory is recorded and
+   * the rest still run. With onlyIfEmpty, files that already have content
+   * are skipped rather than overwritten.
+   */
+  private async runOperation({
+    operation,
+    name,
+    allDirectories,
+    onlyIfEmpty,
+  }: Extract<WebviewMessage, { type: "runOperation" }>): Promise<void> {
+    let names: string[];
+    if (allDirectories) {
+      names = await listTopLevelDirectories();
+    } else {
+      const single = name.trim() || inferNameFromActiveFile();
+      if (!single) {
+        throw new Error("No name given, and no active file to infer one from.");
+      }
+      names = [single];
+    }
+
+    const run = await this.prepareOperation(operation);
+    const writer = new JsonWriter(onlyIfEmpty);
+    const failed: { name: string; message: string }[] = [];
+    for (const dirName of names) {
+      try {
+        await run(dirName, writer);
+      } catch (err) {
+        const message = (err as Error).message;
+        logMessage(`${operation} failed for "${dirName}": ${message}`);
+        failed.push({ name: dirName, message });
+      }
+    }
+
+    this.view?.webview.postMessage({
+      type: "operationResult",
+      written: writer.written,
+      skipped: writer.skipped,
+      failed,
+    });
+  }
+
+  private async prepareOperation(operation: Operation): Promise<(name: string, writer: JsonWriter) => Promise<void>> {
+    if (operation === "generateData") {
+      return generateDataFromSchema;
+    }
+    const catalog = await fetchDefinitionCatalog(this.activeApi);
+    return operation === "exportDefinition"
+      ? (name, writer) => exportDefinitionByTypeName(catalog, name, writer)
+      : (name, writer) => exportDefinitionVariablesByTypeName(catalog, name, writer);
+  }
+
+  private postError(message: string): void {
+    this.view?.webview.postMessage({ type: "error", message });
   }
 
   private buildTabsHtml(): string {

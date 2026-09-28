@@ -1,9 +1,4 @@
 {
-  "definitionExtension.stage.auth0Domain": "auth.storykit-stage.io",
-  "definitionExtension.stage.auth0ClientId": "McKVwrlrOoNt6uTzFj9IQTZZpE9m80iD",
-  "definitionExtension.stage.auth0Audience": "storykit-stage-api",
-  "definitionExtension.stage.auth0Scope": "openid profile email offline_access",
-  "definitionExtension.stage.apiBaseUrl": "http://127.0.0.1:4201",
   "files.exclude": {
     "dist": true,
     "node_modules": true

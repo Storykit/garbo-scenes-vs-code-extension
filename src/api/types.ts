@@ -61,6 +61,7 @@ export interface IVideoSlideDefinition extends IVideoDefinition {
       };
   status: TVideoSlideDefinitionStatus;
   lockedDefaultFields: string[];
+  variables?: unknown;
 }
 export interface SlideDefinitionType {
   _id: string;

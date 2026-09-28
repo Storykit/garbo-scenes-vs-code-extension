@@ -1,4 +1,7 @@
-body { font-family: var(--vscode-font-family); padding: 0 4px; }
+body {
+  font-family: var(--vscode-font-family);
+  padding: 0 4px;
+}
 button {
   margin-top: 8px;
   width: 100%;
@@ -8,8 +11,13 @@ button {
   padding: 6px;
   cursor: pointer;
 }
-button:hover { background: var(--vscode-button-hoverBackground); }
-.env-tabs { display: flex; gap: 4px; }
+button:hover {
+  background: var(--vscode-button-hoverBackground);
+}
+.env-tabs {
+  display: flex;
+  gap: 4px;
+}
 .env-tab {
   margin-top: 0;
   flex: 1;
@@ -20,8 +28,13 @@ button:hover { background: var(--vscode-button-hoverBackground); }
   font-size: 12px;
   cursor: pointer;
 }
-.env-tab:hover { background: var(--vscode-button-secondaryHoverBackground); }
-.env-tab.active { background: var(--vscode-button-background); color: var(--vscode-button-foreground); }
+.env-tab:hover {
+  background: var(--vscode-button-secondaryHoverBackground);
+}
+.env-tab.active {
+  background: var(--vscode-button-background);
+  color: var(--vscode-button-foreground);
+}
 input[type="text"] {
   margin-top: 8px;
   width: 100%;
@@ -31,7 +44,36 @@ input[type="text"] {
   border: 1px solid var(--vscode-input-border, transparent);
   padding: 6px;
 }
-button.secondary { background: var(--vscode-button-secondaryBackground); color: var(--vscode-button-secondaryForeground); }
-button.secondary:hover { background: var(--vscode-button-secondaryHoverBackground); }
-#error { color: var(--vscode-errorForeground); font-size: 12px; margin-top: 8px; min-height: 14px; }
-pre { white-space: pre-wrap; word-break: break-all; font-size: 12px; margin-top: 8px; }
+button.secondary {
+  background: var(--vscode-button-secondaryBackground);
+  color: var(--vscode-button-secondaryForeground);
+}
+button.secondary:hover {
+  background: var(--vscode-button-secondaryHoverBackground);
+}
+#error {
+  color: var(--vscode-errorForeground);
+  font-size: 12px;
+  margin-top: 8px;
+  min-height: 14px;
+}
+pre {
+  white-space: pre-wrap;
+  word-break: break-all;
+  font-size: 12px;
+  margin-top: 8px;
+}
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  font-size: 12px;
+  cursor: pointer;
+}
+input[type="text"]:disabled {
+  opacity: 0.5;
+}
+#error {
+  white-space: pre-wrap;
+}

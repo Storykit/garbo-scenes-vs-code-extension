@@ -1,13 +1,27 @@
 import * as vscode from "vscode";
 import type { StorykitApi } from "../api/storykitApi";
+import type { IVideoSlideDefinition, SlideDefinitionType } from "../api/types";
 import { logMessage } from "../logging";
+import type { JsonWriter } from "./jsonWriter";
 
-async function writeJson(dirUri: vscode.Uri, fileName: string, data: unknown): Promise<void> {
-  const fileUri = vscode.Uri.joinPath(dirUri, fileName);
-  await vscode.workspace.fs.writeFile(fileUri, new TextEncoder().encode(JSON.stringify(data, null, 2)));
+/** Everything fetched from cws that a definition lookup needs. Fetch once, reuse across type names. */
+export interface DefinitionCatalog {
+  definitionTypes: SlideDefinitionType[];
+  definitions: IVideoSlideDefinition[];
 }
 
-export async function exportDefinitionByTypeName(storykitApi: StorykitApi, typeName: string): Promise<string> {
+export async function fetchDefinitionCatalog(storykitApi: StorykitApi): Promise<DefinitionCatalog> {
+  const [definitionTypes, { definitions }] = await Promise.all([
+    storykitApi.getSlideDefinitionTypes(),
+    storykitApi.getDefinitionGroup(),
+  ]);
+  return { definitionTypes, definitions };
+}
+
+async function findDefinitionByTypeName(
+  { definitionTypes, definitions }: DefinitionCatalog,
+  typeName: string,
+): Promise<{ dirUri: vscode.Uri; definition: IVideoSlideDefinition }> {
   const root = vscode.workspace.workspaceFolders?.[0];
   if (!root) {
     throw new Error("No workspace folder open.");
@@ -16,7 +30,6 @@ export async function exportDefinitionByTypeName(storykitApi: StorykitApi, typeN
   const dirUri = vscode.Uri.joinPath(root.uri, typeName);
   await vscode.workspace.fs.createDirectory(dirUri);
 
-  const definitionTypes = await storykitApi.getSlideDefinitionTypes();
   const definitionType = definitionTypes.find((type) => type.name === typeName);
   logMessage(`Looking for definition type named "${typeName}" out of ${definitionTypes.length} available types.`);
   if (!definitionType) {
@@ -24,19 +37,42 @@ export async function exportDefinitionByTypeName(storykitApi: StorykitApi, typeN
   }
   logMessage(`Found definition type: ${JSON.stringify(definitionType, null, 2)}`);
 
-  const { definitions } = await storykitApi.getDefinitionGroup();
   const definition = definitions.find((d) => d.definitionType === definitionType._id);
   logMessage(
     `Looking for definition for type ID "${definitionType._id}" out of ${definitions.length} available definitions.`,
   );
   if (!definition) {
-    await writeJson(dirUri, "all-definitions.json", definitions);
+    // Diagnostic snapshot of current cws state: always overwritten, never stale.
+    await vscode.workspace.fs.writeFile(
+      vscode.Uri.joinPath(dirUri, "all-definitions.json"),
+      new TextEncoder().encode(JSON.stringify(definitions, null, 2)),
+    );
     throw new Error(`No definition found for type "${typeName}".`);
   }
   logMessage(`Found definition: ${JSON.stringify({ id: definition._id }, null, 2)}`);
 
-  await writeJson(dirUri, "dataSchema.json", definition.dataSchema);
-  await writeJson(dirUri, "uiSchema.json", definition.uiSchema);
+  return { dirUri, definition };
+}
 
-  return dirUri.fsPath;
+export async function exportDefinitionByTypeName(
+  catalog: DefinitionCatalog,
+  typeName: string,
+  writer: JsonWriter,
+): Promise<void> {
+  const { dirUri, definition } = await findDefinitionByTypeName(catalog, typeName);
+
+  await writer.write(vscode.Uri.joinPath(dirUri, "dataSchema.json"), definition.dataSchema);
+  await writer.write(vscode.Uri.joinPath(dirUri, "uiSchema.json"), definition.uiSchema);
+}
+
+export async function exportDefinitionVariablesByTypeName(
+  catalog: DefinitionCatalog,
+  typeName: string,
+  writer: JsonWriter,
+): Promise<void> {
+  const { dirUri, definition } = await findDefinitionByTypeName(catalog, typeName);
+  if (definition.variables === undefined) {
+    throw new Error(`Definition for type "${typeName}" has no variables.`);
+  }
+  await writer.write(vscode.Uri.joinPath(dirUri, "definition_values.json"), definition.variables);
 }
