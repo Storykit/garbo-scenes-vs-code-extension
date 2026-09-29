@@ -65,6 +65,11 @@
           "default": "openid profile email offline_access",
           "description": "Stage: OAuth scopes to request. Include offline_access to receive a refresh token."
         },
+        "definitionExtension.stage.redirectUri": {
+          "type": "string",
+          "default": "https://admin.storykit-stage.io/extension/redirect",
+          "description": "Stage: OAuth redirect_uri sent to /authorize and /oauth/token. Must be registered as an Allowed Callback URL in Auth0."
+        },
         "definitionExtension.stage.apiBaseUrl": {
           "type": "string",
           "default": "https://cws.storykit-stage.io",
@@ -89,6 +94,11 @@
           "type": "string",
           "default": "openid profile email offline_access",
           "description": "Production: OAuth scopes to request. Include offline_access to receive a refresh token."
+        },
+        "definitionExtension.production.redirectUri": {
+          "type": "string",
+          "default": "https://admin.storykit.io/extension/redirect",
+          "description": "Production: OAuth redirect_uri sent to /authorize and /oauth/token. Must be registered as an Allowed Callback URL in Auth0."
         },
         "definitionExtension.production.apiBaseUrl": {
           "type": "string",

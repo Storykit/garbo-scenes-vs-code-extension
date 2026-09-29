@@ -16,6 +16,7 @@ interface Auth0Config {
   clientId: string;
   audience?: string;
   scope: string;
+  redirectUri: string;
 }
 
 function redact(value: string): string {
@@ -49,8 +50,11 @@ export class AuthService {
     const config = vscode.workspace.getConfiguration(`definitionExtension.${this.environment}`);
     const rawDomain = config.get<string>("auth0Domain");
     const clientId = config.get<string>("auth0ClientId");
-    if (!rawDomain || !clientId) {
-      throw new Error(`definitionExtension.${this.environment}.auth0Domain and auth0ClientId must be configured.`);
+    const redirectUri = config.get<string>("redirectUri");
+    if (!rawDomain || !clientId || !redirectUri) {
+      throw new Error(
+        `definitionExtension.${this.environment}.auth0Domain, auth0ClientId and redirectUri must be configured.`,
+      );
     }
     return {
       // Bare domain (production Auth0) defaults to https; an explicit
@@ -59,6 +63,7 @@ export class AuthService {
       clientId,
       audience: config.get<string>("auth0Audience") ?? undefined,
       scope: config.get<string>("auth0Scope") ?? "openid profile email offline_access",
+      redirectUri,
     };
   }
 
@@ -75,7 +80,7 @@ export class AuthService {
     const config = vscode.workspace.getConfiguration("definitionExtension");
     const port = config.get<number>("callbackPort") ?? 42813;
     const { result } = await waitForCallback(port);
-    const redirectUri = `http://localhost:4201/extension/redirect`;
+    const redirectUri = auth0.redirectUri;
 
     const authorizeUrl = new URL(`${auth0.origin}/authorize`);
     authorizeUrl.searchParams.set("response_type", "code");
