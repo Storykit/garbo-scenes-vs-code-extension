@@ -42,11 +42,6 @@ async function findDefinitionByTypeName(
     `Looking for definition for type ID "${definitionType._id}" out of ${definitions.length} available definitions.`,
   );
   if (!definition) {
-    // Diagnostic snapshot of current cws state: always overwritten, never stale.
-    await vscode.workspace.fs.writeFile(
-      vscode.Uri.joinPath(dirUri, "all-definitions.json"),
-      new TextEncoder().encode(JSON.stringify(definitions, null, 2)),
-    );
     throw new Error(`No definition found for type "${typeName}".`);
   }
   logMessage(`Found definition: ${JSON.stringify({ id: definition._id }, null, 2)}`);

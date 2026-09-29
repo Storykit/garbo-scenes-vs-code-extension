@@ -11,6 +11,10 @@ async function isMissingOrEmpty(fileUri: vscode.Uri): Promise<boolean> {
   }
 }
 
+// Matches the dominant style in garbo-scenes main (4 spaces, no trailing
+// newline) so every written file ends up formatted the same.
+const INDENT = 4;
+
 /**
  * Writes pretty-printed JSON files and records which were written and which
  * were skipped. With onlyIfEmpty, a file that already exists with content is
@@ -27,7 +31,7 @@ export class JsonWriter {
       this.skipped.push(fileUri.fsPath);
       return;
     }
-    await vscode.workspace.fs.writeFile(fileUri, new TextEncoder().encode(JSON.stringify(data, null, 2)));
+    await vscode.workspace.fs.writeFile(fileUri, new TextEncoder().encode(JSON.stringify(data, null, INDENT)));
     this.written.push(fileUri.fsPath);
   }
 }
