@@ -29,6 +29,7 @@ export class AuthService {
 
   private readonly accessTokenKey: string;
   private readonly refreshTokenKey: string;
+  private refreshInFlight?: Promise<string>;
 
   constructor(
     private readonly secrets: vscode.SecretStorage,
@@ -134,8 +135,18 @@ export class AuthService {
    * Exchanges the stored refresh token for a new access token. Throws if
    * there is no refresh token or the exchange fails, so callers can fall
    * back to prompting the user to sign in again.
+   *
+   * Concurrent callers share one exchange: Auth0 rotates refresh tokens, so a
+   * second exchange with the same token fails and would log the user out.
    */
-  async refresh(): Promise<string> {
+  refresh(): Promise<string> {
+    this.refreshInFlight ??= this.exchangeRefreshToken().finally(() => {
+      this.refreshInFlight = undefined;
+    });
+    return this.refreshInFlight;
+  }
+
+  private async exchangeRefreshToken(): Promise<string> {
     const refreshToken = await this.secrets.get(this.refreshTokenKey);
     if (!refreshToken) {
       throw new Error("No refresh token available.");
