@@ -34,7 +34,10 @@ function findDefinitionByTypeName(
   }
   logMessage(`Found definition type: ${JSON.stringify(definitionType, null, 2)}`);
 
-  const definition = definitions.find((d) => d.definitionType === definitionType._id);
+  // cws returns definitionType as an ID or, when populated, as the type object.
+  const definition = definitions.find(
+    (d) => (typeof d.definitionType === "string" ? d.definitionType : d.definitionType._id) === definitionType._id,
+  );
   logMessage(
     `Looking for definition for type ID "${definitionType._id}" out of ${definitions.length} available definitions.`,
   );
