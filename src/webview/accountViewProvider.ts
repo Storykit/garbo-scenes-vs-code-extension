@@ -60,28 +60,24 @@ export class AccountViewProvider implements vscode.WebviewViewProvider {
     };
 
     webviewView.webview.onDidReceiveMessage(async (message: WebviewMessage) => {
-      switch (message.type) {
-        case 'switchEnvironment':
-          this.activeEnvironment = message.environment;
-          void this.render();
-          break;
-        case 'login':
-          try {
+      try {
+        switch (message.type) {
+          case 'switchEnvironment':
+            this.activeEnvironment = message.environment;
+            await this.render();
+            break;
+          case 'login':
             await this.activeApi.login();
-          } catch (err) {
-            this.postError((err as Error).message);
-          }
-          break;
-        case 'logout':
-          await this.activeApi.logout();
-          break;
-        case 'runOperation':
-          try {
+            break;
+          case 'logout':
+            await this.activeApi.logout();
+            break;
+          case 'runOperation':
             await this.runOperation(message);
-          } catch (err) {
-            this.postError((err as Error).message);
-          }
-          break;
+            break;
+        }
+      } catch (err) {
+        this.postError((err as Error).message);
       }
     });
 
