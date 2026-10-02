@@ -24,6 +24,7 @@ function redact(value: string): string {
 }
 
 export class AuthService {
+  /** Fires on sign-in and sign-out only; silent token refreshes must not re-render the webview. */
   private readonly _onDidChangeSession = new vscode.EventEmitter<void>();
   readonly onDidChangeSession = this._onDidChangeSession.event;
 
@@ -129,6 +130,7 @@ export class AuthService {
 
     const tokens = (await tokenResponse.json()) as TokenResponse;
     await this.storeTokens(tokens);
+    this._onDidChangeSession.fire();
   }
 
   /**
@@ -188,6 +190,5 @@ export class AuthService {
     if (tokens.refresh_token) {
       await this.secrets.store(this.refreshTokenKey, tokens.refresh_token);
     }
-    this._onDidChangeSession.fire();
   }
 }
