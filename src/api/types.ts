@@ -1,6 +1,6 @@
-import type { JsonSchema, UISchemaElement } from "@jsonforms/core";
+import type { JsonSchema, UISchemaElement } from '@jsonforms/core';
 
-export type TVideoDefinitionAccessCategory = "basic" | "premium" | "custom";
+export type TVideoDefinitionAccessCategory = 'basic' | 'premium' | 'custom';
 export interface IPreview {
   /**
    *  atTime: decimal percentage value between 0 and 1
@@ -14,7 +14,7 @@ export interface IPreview {
     end: number;
   };
 }
-export type TVideoSlideDefinitionStatus = "deprecated" | "newest" | "last";
+export type TVideoSlideDefinitionStatus = 'deprecated' | 'newest' | 'last';
 export interface IVideoDefinition {
   _id: string;
 

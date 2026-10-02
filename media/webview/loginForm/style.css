@@ -1,4 +1,7 @@
-body { font-family: var(--vscode-font-family); padding: 0 4px; }
+body {
+  font-family: var(--vscode-font-family);
+  padding: 0 4px;
+}
 button {
   margin-top: 8px;
   width: 100%;
@@ -8,8 +11,13 @@ button {
   padding: 6px;
   cursor: pointer;
 }
-button:hover { background: var(--vscode-button-hoverBackground); }
-.env-tabs { display: flex; gap: 4px; }
+button:hover {
+  background: var(--vscode-button-hoverBackground);
+}
+.env-tabs {
+  display: flex;
+  gap: 4px;
+}
 .env-tab {
   margin-top: 0;
   flex: 1;
@@ -20,6 +28,16 @@ button:hover { background: var(--vscode-button-hoverBackground); }
   font-size: 12px;
   cursor: pointer;
 }
-.env-tab:hover { background: var(--vscode-button-secondaryHoverBackground); }
-.env-tab.active { background: var(--vscode-button-background); color: var(--vscode-button-foreground); }
-#error { color: var(--vscode-errorForeground); font-size: 12px; margin-top: 8px; min-height: 14px; }
+.env-tab:hover {
+  background: var(--vscode-button-secondaryHoverBackground);
+}
+.env-tab.active {
+  background: var(--vscode-button-background);
+  color: var(--vscode-button-foreground);
+}
+#error {
+  color: var(--vscode-errorForeground);
+  font-size: 12px;
+  margin-top: 8px;
+  min-height: 14px;
+}

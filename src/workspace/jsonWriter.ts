@@ -1,10 +1,10 @@
-import * as vscode from "vscode";
+import * as vscode from 'vscode';
 
 async function isMissingOrEmpty(fileUri: vscode.Uri): Promise<boolean> {
   try {
     return (await vscode.workspace.fs.stat(fileUri)).size === 0;
   } catch (err) {
-    if (err instanceof vscode.FileSystemError && err.code === "FileNotFound") {
+    if (err instanceof vscode.FileSystemError && err.code === 'FileNotFound') {
       return true;
     }
     throw err;
@@ -32,8 +32,13 @@ export class JsonWriter {
       this.skipped.push(fileUri.fsPath);
       return;
     }
-    await vscode.workspace.fs.createDirectory(vscode.Uri.joinPath(fileUri, ".."));
-    await vscode.workspace.fs.writeFile(fileUri, new TextEncoder().encode(JSON.stringify(data, null, INDENT)));
+    await vscode.workspace.fs.createDirectory(
+      vscode.Uri.joinPath(fileUri, '..')
+    );
+    await vscode.workspace.fs.writeFile(
+      fileUri,
+      new TextEncoder().encode(JSON.stringify(data, null, INDENT))
+    );
     this.written.push(fileUri.fsPath);
   }
 }

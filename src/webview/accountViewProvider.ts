@@ -1,35 +1,45 @@
-import * as vscode from "vscode";
-import type { StorykitApi } from "../api/storykitApi";
-import { ENVIRONMENTS, ENVIRONMENT_LABELS, type Environment } from "../environment";
-import { logMessage } from "../logging";
-import { loadComponentHtml } from "./htmlLoader";
+import * as vscode from 'vscode';
+import type { StorykitApi } from '../api/storykitApi';
+import {
+  ENVIRONMENTS,
+  ENVIRONMENT_LABELS,
+  type Environment,
+} from '../environment';
+import { logMessage } from '../logging';
+import { loadComponentHtml } from './htmlLoader';
 import {
   exportDefinitionByTypeName,
   exportDefinitionVariablesByTypeName,
   fetchDefinitionCatalog,
-} from "../operations/exportDefinition";
-import { generateDataFromSchema } from "../operations/generateDataFromSchema";
-import { inferNameFromActiveFile } from "../workspace/inferNameFromActiveFile";
-import { JsonWriter } from "../workspace/jsonWriter";
-import { listTopLevelDirectories } from "../workspace/listTopLevelDirectories";
+} from '../operations/exportDefinition';
+import { generateDataFromSchema } from '../operations/generateDataFromSchema';
+import { inferNameFromActiveFile } from '../workspace/inferNameFromActiveFile';
+import { JsonWriter } from '../workspace/jsonWriter';
+import { listTopLevelDirectories } from '../workspace/listTopLevelDirectories';
 
-type Operation = "exportDefinition" | "exportVariables" | "generateData";
+type Operation = 'exportDefinition' | 'exportVariables' | 'generateData';
 
 type WebviewMessage =
-  | { type: "login" }
-  | { type: "logout" }
-  | { type: "runOperation"; operation: Operation; name: string; allDirectories: boolean; onlyIfEmpty: boolean }
-  | { type: "switchEnvironment"; environment: Environment };
+  | { type: 'login' }
+  | { type: 'logout' }
+  | {
+      type: 'runOperation';
+      operation: Operation;
+      name: string;
+      allDirectories: boolean;
+      onlyIfEmpty: boolean;
+    }
+  | { type: 'switchEnvironment'; environment: Environment };
 
 export class AccountViewProvider implements vscode.WebviewViewProvider {
-  static readonly viewType = "definitionExtension.loginView";
+  static readonly viewType = 'definitionExtension.loginView';
 
   private view?: vscode.WebviewView;
-  private activeEnvironment: Environment = "stage";
+  private activeEnvironment: Environment = 'stage';
 
   constructor(
     private readonly apis: Record<Environment, StorykitApi>,
-    private readonly extensionUri: vscode.Uri,
+    private readonly extensionUri: vscode.Uri
   ) {
     for (const environment of ENVIRONMENTS) {
       apis[environment].onDidChangeSession(() => this.render());
@@ -44,26 +54,28 @@ export class AccountViewProvider implements vscode.WebviewViewProvider {
     this.view = webviewView;
     webviewView.webview.options = {
       enableScripts: true,
-      localResourceRoots: [vscode.Uri.joinPath(this.extensionUri, "media", "webview")],
+      localResourceRoots: [
+        vscode.Uri.joinPath(this.extensionUri, 'media', 'webview'),
+      ],
     };
 
     webviewView.webview.onDidReceiveMessage(async (message: WebviewMessage) => {
       switch (message.type) {
-        case "switchEnvironment":
+        case 'switchEnvironment':
           this.activeEnvironment = message.environment;
           void this.render();
           break;
-        case "login":
+        case 'login':
           try {
             await this.activeApi.login();
           } catch (err) {
             this.postError((err as Error).message);
           }
           break;
-        case "logout":
+        case 'logout':
           await this.activeApi.logout();
           break;
-        case "runOperation":
+        case 'runOperation':
           try {
             await this.runOperation(message);
           } catch (err) {
@@ -88,14 +100,14 @@ export class AccountViewProvider implements vscode.WebviewViewProvider {
     name,
     allDirectories,
     onlyIfEmpty,
-  }: Extract<WebviewMessage, { type: "runOperation" }>): Promise<void> {
+  }: Extract<WebviewMessage, { type: 'runOperation' }>): Promise<void> {
     let names: string[];
     if (allDirectories) {
       names = await listTopLevelDirectories();
     } else {
       const single = name.trim() || inferNameFromActiveFile();
       if (!single) {
-        throw new Error("No name given, and no active file to infer one from.");
+        throw new Error('No name given, and no active file to infer one from.');
       }
       names = [single];
     }
@@ -114,32 +126,35 @@ export class AccountViewProvider implements vscode.WebviewViewProvider {
     }
 
     this.view?.webview.postMessage({
-      type: "operationResult",
+      type: 'operationResult',
       written: writer.written,
       skipped: writer.skipped,
       failed,
     });
   }
 
-  private async prepareOperation(operation: Operation): Promise<(name: string, writer: JsonWriter) => Promise<void>> {
-    if (operation === "generateData") {
+  private async prepareOperation(
+    operation: Operation
+  ): Promise<(name: string, writer: JsonWriter) => Promise<void>> {
+    if (operation === 'generateData') {
       return generateDataFromSchema;
     }
     const catalog = await fetchDefinitionCatalog(this.activeApi);
-    return operation === "exportDefinition"
+    return operation === 'exportDefinition'
       ? (name, writer) => exportDefinitionByTypeName(catalog, name, writer)
-      : (name, writer) => exportDefinitionVariablesByTypeName(catalog, name, writer);
+      : (name, writer) =>
+          exportDefinitionVariablesByTypeName(catalog, name, writer);
   }
 
   private postError(message: string): void {
-    this.view?.webview.postMessage({ type: "error", message });
+    this.view?.webview.postMessage({ type: 'error', message });
   }
 
   private buildTabsHtml(): string {
     return ENVIRONMENTS.map((environment) => {
-      const active = environment === this.activeEnvironment ? " active" : "";
+      const active = environment === this.activeEnvironment ? ' active' : '';
       return `<button class="env-tab${active}" data-env="${environment}">${ENVIRONMENT_LABELS[environment]}</button>`;
-    }).join("");
+    }).join('');
   }
 
   private async render(): Promise<void> {
@@ -150,8 +165,8 @@ export class AccountViewProvider implements vscode.WebviewViewProvider {
     this.view.webview.html = await loadComponentHtml(
       this.view.webview,
       this.extensionUri,
-      signedIn ? "signedIn" : "loginForm",
-      { tabsHtml: this.buildTabsHtml() },
+      signedIn ? 'signedIn' : 'loginForm',
+      { tabsHtml: this.buildTabsHtml() }
     );
   }
 }

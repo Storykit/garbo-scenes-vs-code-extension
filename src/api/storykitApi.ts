@@ -1,6 +1,6 @@
-import type { AxiosInstance } from "axios";
-import type { AuthService } from "../auth/authService";
-import type { DefinitionGroup, SlideDefinitionType } from "./types";
+import type { AxiosInstance } from 'axios';
+import type { AuthService } from '../auth/authService';
+import type { DefinitionGroup, SlideDefinitionType } from './types';
 
 /**
  * Generic facade over all Storykit backend interaction (auth actions +
@@ -12,7 +12,7 @@ export class StorykitApi {
 
   constructor(
     private readonly authService: AuthService,
-    private readonly apiClient: AxiosInstance,
+    private readonly apiClient: AxiosInstance
   ) {
     this.onDidChangeSession = authService.onDidChangeSession;
   }
@@ -30,12 +30,16 @@ export class StorykitApi {
   }
 
   async getSlideDefinitionTypes(): Promise<SlideDefinitionType[]> {
-    const { data } = await this.apiClient.get<SlideDefinitionType[]>("/videostudio/definitionType");
+    const { data } = await this.apiClient.get<SlideDefinitionType[]>(
+      '/videostudio/definitionType'
+    );
     return data;
   }
 
   async getDefinitionGroup(): Promise<DefinitionGroup> {
-    const { data } = await this.apiClient.get<DefinitionGroup>("/videostudio/definition/group");
+    const { data } = await this.apiClient.get<DefinitionGroup>(
+      '/videostudio/definition/group'
+    );
     return data;
   }
 }

@@ -7,3 +7,6 @@ node_modules/**
 .claude/**
 eslint.config.js
 *.vsix
+.prettierrc.js
+.prettierignore
+.editorconfig

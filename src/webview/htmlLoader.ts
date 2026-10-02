@@ -10,12 +10,23 @@ export async function loadComponentHtml(
   webview: vscode.Webview,
   extensionUri: vscode.Uri,
   componentDir: string,
-  extraReplacements: Record<string, string> = {},
+  extraReplacements: Record<string, string> = {}
 ): Promise<string> {
-  const dirUri = vscode.Uri.joinPath(extensionUri, 'media', 'webview', componentDir);
-  const bytes = await vscode.workspace.fs.readFile(vscode.Uri.joinPath(dirUri, 'index.html'));
-  const styleUri = webview.asWebviewUri(vscode.Uri.joinPath(dirUri, 'style.css'));
-  const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(dirUri, 'script.js'));
+  const dirUri = vscode.Uri.joinPath(
+    extensionUri,
+    'media',
+    'webview',
+    componentDir
+  );
+  const bytes = await vscode.workspace.fs.readFile(
+    vscode.Uri.joinPath(dirUri, 'index.html')
+  );
+  const styleUri = webview.asWebviewUri(
+    vscode.Uri.joinPath(dirUri, 'style.css')
+  );
+  const scriptUri = webview.asWebviewUri(
+    vscode.Uri.joinPath(dirUri, 'script.js')
+  );
 
   let html = new TextDecoder()
     .decode(bytes)

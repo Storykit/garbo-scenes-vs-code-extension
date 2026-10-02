@@ -7,7 +7,10 @@ const onlyIfEmptyEl = document.getElementById('onlyIfEmpty');
 
 document.querySelectorAll('.env-tab').forEach((btn) => {
   btn.addEventListener('click', () => {
-    vscode.postMessage({ type: 'switchEnvironment', environment: btn.dataset.env });
+    vscode.postMessage({
+      type: 'switchEnvironment',
+      environment: btn.dataset.env,
+    });
   });
 });
 
@@ -44,9 +47,13 @@ window.addEventListener('message', (event) => {
       sections.push(`Written (${written.length}):\n${written.join('\n')}`);
     }
     if (skipped.length) {
-      sections.push(`Skipped, already has content (${skipped.length}):\n${skipped.join('\n')}`);
+      sections.push(
+        `Skipped, already has content (${skipped.length}):\n${skipped.join('\n')}`
+      );
     }
-    resultEl.textContent = sections.length ? sections.join('\n\n') : 'Nothing written.';
+    resultEl.textContent = sections.length
+      ? sections.join('\n\n')
+      : 'Nothing written.';
     errorEl.textContent = failed.length
       ? `Failed (${failed.length}):\n${failed.map((f) => `${f.name}: ${f.message}`).join('\n')}`
       : '';

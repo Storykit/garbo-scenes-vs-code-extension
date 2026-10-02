@@ -1,7 +1,11 @@
 import { createHash, randomBytes } from 'node:crypto';
 
 function base64url(input: Buffer): string {
-  return input.toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  return input
+    .toString('base64')
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=+$/, '');
 }
 
 export interface PkcePair {

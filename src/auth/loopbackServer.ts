@@ -15,7 +15,10 @@ let cancelActive: (() => Promise<void>) | undefined;
  * Allowed Callback URL in the Auth0 dashboard. Starting a new wait cancels
  * any earlier one, so an abandoned sign-in never blocks the port.
  */
-export async function waitForCallback(port: number, timeoutMs = 120_000): Promise<{ result: Promise<CallbackResult> }> {
+export async function waitForCallback(
+  port: number,
+  timeoutMs = 120_000
+): Promise<{ result: Promise<CallbackResult> }> {
   await cancelActive?.();
 
   return new Promise((resolveStart, rejectStart) => {
@@ -40,7 +43,9 @@ export async function waitForCallback(port: number, timeoutMs = 120_000): Promis
 
     const cancel = async () => {
       const closed = shutdown();
-      rejectResult(new Error('Sign-in cancelled because a new sign-in was started.'));
+      rejectResult(
+        new Error('Sign-in cancelled because a new sign-in was started.')
+      );
       await closed;
     };
 
@@ -55,7 +60,9 @@ export async function waitForCallback(port: number, timeoutMs = 120_000): Promis
       }
 
       const url = new URL(req.url ?? '/', 'http://localhost');
-      const error = url.searchParams.get('error_description') ?? url.searchParams.get('error');
+      const error =
+        url.searchParams.get('error_description') ??
+        url.searchParams.get('error');
       const code = url.searchParams.get('code');
 
       if (error) {
@@ -81,7 +88,11 @@ export async function waitForCallback(port: number, timeoutMs = 120_000): Promis
 
     server.on('error', (err: NodeJS.ErrnoException) => {
       if (err.code === 'EADDRINUSE') {
-        rejectStart(new Error(`Port ${port} is already in use by another program. Free it or change the callback port setting.`));
+        rejectStart(
+          new Error(
+            `Port ${port} is already in use by another program. Free it or change the callback port setting.`
+          )
+        );
       } else {
         rejectStart(err);
       }

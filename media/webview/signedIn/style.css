@@ -35,7 +35,7 @@ button:hover {
   background: var(--vscode-button-background);
   color: var(--vscode-button-foreground);
 }
-input[type="text"] {
+input[type='text'] {
   margin-top: 8px;
   width: 100%;
   box-sizing: border-box;
@@ -71,7 +71,7 @@ pre {
   font-size: 12px;
   cursor: pointer;
 }
-input[type="text"]:disabled {
+input[type='text']:disabled {
   opacity: 0.5;
 }
 #error {

@@ -1,20 +1,36 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-  <link rel="stylesheet" href="{{styleUri}}">
-</head>
-<body>
-  <div class="env-tabs">{{tabsHtml}}</div>
-  <p>Signed in.</p>
-  <input id="definitionTypeName" type="text" placeholder="Definition type name">
-  <label class="toggle"><input id="allDirectories" type="checkbox"> All top-level directories</label>
-  <label class="toggle"><input id="onlyIfEmpty" type="checkbox" checked> Only write if empty</label>
-  <button class="secondary" data-operation="exportDefinition">Export definition</button>
-  <button class="secondary" data-operation="generateData">Generate data</button>
-  <button class="secondary" data-operation="exportVariables">Export variables</button>
-  <div id="error"></div>
-  <pre id="result"></pre>
-  <button id="logout">Sign out</button>
-  <script src="{{scriptUri}}"></script>
-</body>
+  <head>
+    <link rel="stylesheet" href="{{styleUri}}" />
+  </head>
+  <body>
+    <div class="env-tabs">{{tabsHtml}}</div>
+    <p>Signed in.</p>
+    <input
+      id="definitionTypeName"
+      type="text"
+      placeholder="Definition type name"
+    />
+    <label class="toggle"
+      ><input id="allDirectories" type="checkbox" /> All top-level
+      directories</label
+    >
+    <label class="toggle"
+      ><input id="onlyIfEmpty" type="checkbox" checked /> Only write if
+      empty</label
+    >
+    <button class="secondary" data-operation="exportDefinition">
+      Export definition
+    </button>
+    <button class="secondary" data-operation="generateData">
+      Generate data
+    </button>
+    <button class="secondary" data-operation="exportVariables">
+      Export variables
+    </button>
+    <div id="error"></div>
+    <pre id="result"></pre>
+    <button id="logout">Sign out</button>
+    <script src="{{scriptUri}}"></script>
+  </body>
 </html>

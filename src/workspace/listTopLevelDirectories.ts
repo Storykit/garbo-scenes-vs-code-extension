@@ -1,12 +1,12 @@
-import * as vscode from "vscode";
-import { getWorkspaceRoot } from "./workspaceRoot";
+import * as vscode from 'vscode';
+import { getWorkspaceRoot } from './workspaceRoot';
 
 const EXCLUDED_DIRECTORIES = new Set([
-  "node_modules",
-  "00_TEMPLATE",
-  "01_LOCAL_BACKGROUND",
-  "background",
-  "shared_modules",
+  'node_modules',
+  '00_TEMPLATE',
+  '01_LOCAL_BACKGROUND',
+  'background',
+  'shared_modules',
 ]);
 
 /**
@@ -19,7 +19,9 @@ export async function listTopLevelDirectories(): Promise<string[]> {
   return entries
     .filter(
       ([name, type]) =>
-        type === vscode.FileType.Directory && !name.startsWith(".") && !EXCLUDED_DIRECTORIES.has(name),
+        type === vscode.FileType.Directory &&
+        !name.startsWith('.') &&
+        !EXCLUDED_DIRECTORIES.has(name)
     )
     .map(([name]) => name)
     .sort();

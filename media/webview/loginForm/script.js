@@ -3,7 +3,10 @@ const errorEl = document.getElementById('error');
 
 document.querySelectorAll('.env-tab').forEach((btn) => {
   btn.addEventListener('click', () => {
-    vscode.postMessage({ type: 'switchEnvironment', environment: btn.dataset.env });
+    vscode.postMessage({
+      type: 'switchEnvironment',
+      environment: btn.dataset.env,
+    });
   });
 });
 

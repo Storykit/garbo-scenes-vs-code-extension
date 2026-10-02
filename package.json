@@ -120,7 +120,9 @@
     "watch": "npm run compile -- --watch",
     "package": "vsce package",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "format": "prettier \"src/**/*.ts\" \"media/**/*.{js,css,html}\" --check",
+    "format:fix": "prettier \"src/**/*.ts\" \"media/**/*.{js,css,html}\" --write"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -132,6 +134,7 @@
     "esbuild": "^0.28.2",
     "eslint": "^10.10.0",
     "eslint-config-prettier": "^10.1.8",
+    "prettier": "^3.9.9",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.70.0"
   },

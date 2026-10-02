@@ -26,6 +26,10 @@ Run `npm run package` to build a `.vsix`. This requires [vsce](https://github.co
 
 Run `npm run lint`. Use `npm run lint:fix` to apply auto-fixes.
 
+### Format
+
+Run `npm run format` to check formatting with Prettier, or `npm run format:fix` to rewrite the files. The config follows dolly's (`apps/admin`, `apps/kit-editorials`).
+
 ## Usage
 
 The extension adds a **Definition Extension** view to the activity bar. Choose **Stage** or **Production**, sign in, and then run one of these operations:

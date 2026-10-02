@@ -1,10 +1,10 @@
-import * as vscode from "vscode";
-import { AuthService } from "./auth/authService";
-import { createApiClient } from "./api/client";
-import { StorykitApi } from "./api/storykitApi";
-import { AccountViewProvider } from "./webview/accountViewProvider";
-import { ENVIRONMENTS, type Environment } from "./environment";
-import { outputChannel } from "./logging";
+import * as vscode from 'vscode';
+import { AuthService } from './auth/authService';
+import { createApiClient } from './api/client';
+import { StorykitApi } from './api/storykitApi';
+import { AccountViewProvider } from './webview/accountViewProvider';
+import { ENVIRONMENTS, type Environment } from './environment';
+import { outputChannel } from './logging';
 
 export function activate(context: vscode.ExtensionContext): void {
   const apis = Object.fromEntries(
@@ -12,15 +12,17 @@ export function activate(context: vscode.ExtensionContext): void {
       const authService = new AuthService(context.secrets, environment);
       const apiClient = createApiClient(authService, environment);
       return [environment, new StorykitApi(authService, apiClient)];
-    }),
+    })
   ) as Record<Environment, StorykitApi>;
 
   context.subscriptions.push(
     outputChannel,
     vscode.window.registerWebviewViewProvider(
       AccountViewProvider.viewType,
-      new AccountViewProvider(apis, context.extensionUri),
+      new AccountViewProvider(apis, context.extensionUri)
     ),
-    vscode.commands.registerCommand("definitionExtension.showLogs", () => outputChannel.show()),
+    vscode.commands.registerCommand('definitionExtension.showLogs', () =>
+      outputChannel.show()
+    )
   );
 }

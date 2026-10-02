@@ -1,6 +1,6 @@
-import * as path from "node:path";
-import * as vscode from "vscode";
-import { getWorkspaceRoot } from "./workspaceRoot";
+import * as path from 'node:path';
+import * as vscode from 'vscode';
+import { getWorkspaceRoot } from './workspaceRoot';
 
 /**
  * Returns the name of the directory directly under the workspace root that
@@ -14,9 +14,9 @@ export function inferNameFromActiveFile(): string | undefined {
     return undefined;
   }
   const relative = path.posix.relative(root.path, fileUri.path);
-  if (relative === ".." || relative.startsWith("../")) {
+  if (relative === '..' || relative.startsWith('../')) {
     return undefined;
   }
-  const [firstSegment, ...rest] = relative.split("/");
+  const [firstSegment, ...rest] = relative.split('/');
   return rest.length > 0 ? firstSegment : undefined;
 }
