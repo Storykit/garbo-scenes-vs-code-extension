@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 
 /**
- * Loads media/webview/<componentDir>/index.html and fills its {{key}}
+ * Loads webview-ui/<componentDir>/index.html and fills its {{key}}
  * placeholders: {{styleUri}} / {{scriptUri}} point at the sibling
  * style.css / script.js via the webview's asWebviewUri, {{cspSource}} is the
  * webview's CSP source, and any other key comes from extraReplacements.
@@ -12,12 +12,7 @@ export async function loadComponentHtml(
   componentDir: string,
   extraReplacements: Record<string, string> = {}
 ): Promise<string> {
-  const dirUri = vscode.Uri.joinPath(
-    extensionUri,
-    'media',
-    'webview',
-    componentDir
-  );
+  const dirUri = vscode.Uri.joinPath(extensionUri, 'webview-ui', componentDir);
   const bytes = await vscode.workspace.fs.readFile(
     vscode.Uri.joinPath(dirUri, 'index.html')
   );

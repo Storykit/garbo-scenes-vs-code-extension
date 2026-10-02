@@ -78,8 +78,8 @@ To see the request and response logs, run the command **Definition Extension: Sh
   - **operations**: The operations that the buttons in the view start. These operations do not use the UI.
   - **workspace**: Read and write operations on the files and directories in the workspace.
   - **webview**: The sidebar view and the messages that it sends and receives.
-- **media**
-  - **webview**: The HTML, CSS and JS files for the view. There is one folder for each state (`loginForm`, `signedIn`).
+- **webview-ui**: The HTML, CSS and JS files for the view. There is one folder for each state (`loginForm`, `signedIn`).
+- **assets**: The extension icon.
 
 ## Environment configuration
 
