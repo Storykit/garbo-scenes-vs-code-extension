@@ -54,12 +54,15 @@ export class AuthService {
     const config = vscode.workspace.getConfiguration(
       `definitionExtension.${this.environment}`
     );
+    // Defaults live in package.json (contributes.configuration), so a missing
+    // value here means the user cleared it.
     const rawDomain = config.get<string>('auth0Domain');
     const clientId = config.get<string>('auth0ClientId');
+    const scope = config.get<string>('auth0Scope');
     const redirectUri = config.get<string>('redirectUri');
-    if (!rawDomain || !clientId || !redirectUri) {
+    if (!rawDomain || !clientId || !scope || !redirectUri) {
       throw new Error(
-        `definitionExtension.${this.environment}.auth0Domain, auth0ClientId and redirectUri must be configured.`
+        `definitionExtension.${this.environment}.auth0Domain, auth0ClientId, auth0Scope and redirectUri must be configured.`
       );
     }
     return {
@@ -67,10 +70,8 @@ export class AuthService {
       // http://... override is honored as-is (local mock server testing).
       origin: rawDomain.startsWith('http') ? rawDomain : `https://${rawDomain}`,
       clientId,
-      audience: config.get<string>('auth0Audience') ?? undefined,
-      scope:
-        config.get<string>('auth0Scope') ??
-        'openid profile email offline_access',
+      audience: config.get<string>('auth0Audience'),
+      scope,
       redirectUri,
     };
   }
@@ -85,8 +86,12 @@ export class AuthService {
     const { verifier, challenge } = createPkcePair();
     const state = createState();
 
-    const config = vscode.workspace.getConfiguration('definitionExtension');
-    const port = config.get<number>('callbackPort') ?? 42813;
+    const port = vscode.workspace
+      .getConfiguration('definitionExtension')
+      .get<number>('callbackPort');
+    if (!port) {
+      throw new Error('definitionExtension.callbackPort must be configured.');
+    }
     const { result } = await waitForCallback(port);
     const redirectUri = auth0.redirectUri;
 
