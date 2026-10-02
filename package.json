@@ -1,12 +1,12 @@
 {
-  "name": "definition-extension",
+  "name": "garbo-scenes-vs-code-extension",
   "displayName": "Definition Extension",
   "description": "Fetch slide definitions from Storykit CWS and write them into garbo-scenes directories as JSON.",
   "version": "0.0.1",
   "publisher": "storykit",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Storykit/definition-extension.git"
+    "url": "https://github.com/Storykit/garbo-scenes-vs-code-extension.git"
   },
   "engines": {
     "vscode": "^1.85.0"

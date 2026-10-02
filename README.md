@@ -1,88 +1,111 @@
 # Definition Extension
 
-VS Code extension for working with slide definitions in [garbo-scenes](https://github.com/Storykit/garbo-scenes). It signs in to Storykit through Auth0, fetches definitions from CWS, and writes them into the scene directories as JSON.
+The Definition Extension is a VS Code extension for the slide definitions in [garbo-scenes](https://github.com/Storykit/garbo-scenes). It gets the definitions from CWS and writes them as JSON files into the scene directories. It uses Auth0 to sign in to Storykit.
 
 ## Local development
 
-### Setup
+### Set up the project
 
 Run `npm install`.
 
-Sign-in redirects through the admin app, so admin must be running locally (see [Authentication](#authentication)). Start it from dolly with `npm run start` in `apps/admin`. It serves on `http://localhost:4201/`.
-
 ### Run the extension
 
-Open this project in VS Code and press `F5` (**Run Extension**). This compiles the extension and opens an Extension Development Host window. Open the garbo-scenes repo in that window. The extension works on the first workspace folder.
+1. Open this project in VS Code.
+2. Push `F5` (**Run Extension**). VS Code compiles the extension and opens an Extension Development Host window.
+3. In the Extension Development Host window, open the garbo-scenes repository.
 
-Run `npm run watch` to rebuild on change, then reload the Extension Development Host window (`Developer: Reload Window`) to pick up the new code.
+> **Note:** The extension uses only the first workspace folder.
 
-### Build
+To rebuild the extension when you change the code:
 
-Run `npm run compile` to bundle the extension with esbuild. The output is `dist/extension.js`. esbuild does not check types, so run `npm run typecheck` (`tsc --noEmit`) as well. The default build task (`F5`) and `npm run package` run both.
+1. Run `npm run watch`.
+2. In the Extension Development Host window, run the command `Developer: Reload Window`.
 
-Run `npm run package` to build a `.vsix`. This requires [vsce](https://github.com/microsoft/vscode-vsce) (`npm i -g @vscode/vsce`).
+### Build the extension
 
-### Lint
+- To bundle the extension, run `npm run compile`. This command uses esbuild and writes `dist/extension.js`.
+- esbuild does not do a type check. To do a type check, run `npm run typecheck` (`tsc --noEmit`).
+- To make a `.vsix` package, run `npm run package`. Before you do this, install [vsce](https://github.com/microsoft/vscode-vsce) (`npm i -g @vscode/vsce`).
 
-Run `npm run lint`. Use `npm run lint:fix` to apply auto-fixes.
+> **Note:** The default build task (`F5`) and `npm run package` do the type check and the bundle.
 
-### Format
+### Lint the code
 
-Run `npm run format` to check formatting with Prettier, or `npm run format:fix` to rewrite the files. The config follows dolly's (`apps/admin`, `apps/kit-editorials`).
+- To find lint errors, run `npm run lint`.
+- To repair the errors that ESLint can repair automatically, run `npm run lint:fix`.
 
-## Usage
+### Format the code
 
-The extension adds a **Definition Extension** view to the activity bar. Choose **Stage** or **Production**, sign in, and then run one of these operations:
+- To examine the format of the files, run `npm run format`.
+- To change the files to the correct format, run `npm run format:fix`.
 
-| Operation | Reads | Writes |
+
+## Use the extension
+
+The extension adds the **Definition Extension** view to the activity bar.
+
+1. Select **Stage** or **Production**.
+2. Sign in.
+3. Select the operation that you want to do.
+
+| Operation | Input | Output |
 |---|---|---|
-| Export definition | Definition from CWS | `dataSchema.json`, `uiSchema.json` |
-| Export variables | Definition from CWS | `definition_values.json` |
-| Generate data | Local `dataSchema.json` | `data.json` |
+| Export definition | The definition in CWS | `dataSchema.json`, `uiSchema.json` |
+| Export variables | The definition in CWS | `definition_values.json` |
+| Generate data | The local `dataSchema.json` | `data.json` |
 
-Each operation targets a single scene directory. Enter its name in the **Definition type name** field, or leave the field empty to use the directory of the file open in the editor. Directory names match definition type names in CWS.
+Each operation uses one scene directory. The name of a scene directory is the same as the name of a definition type in CWS.
 
-- **All top-level directories** runs the operation on every scene directory. It skips hidden directories, `node_modules`, `00_TEMPLATE`, `01_LOCAL_BACKGROUND`, `background` and `shared_modules`. If one directory fails, the rest still run.
-- **Only write if empty** skips files that already have content. Turn it off to overwrite them.
+- To select a directory, write its name in the **Definition type name** field.
+- If the field is empty, the extension uses the directory of the file that is open in the editor.
 
-JSON is written with 4-space indentation and no trailing newline, which is the dominant style in garbo-scenes (~90%).
+You can use these options:
 
-Request and response logs are available through the command **Definition Extension: Show Request Logs**.
+- **All top-level directories**: The extension does the operation on all scene directories. It does not use hidden directories, `node_modules`, `00_TEMPLATE`, `01_LOCAL_BACKGROUND`, `background` and `shared_modules`. If the operation fails in one directory, the extension continues in the other directories.
+- **Only write if empty**: The extension does not change files that have content. To overwrite these files, clear this option.
+
+The extension writes JSON with an indent of 4 spaces and no newline at the end of the file. Approximately 90% of the JSON files in garbo-scenes use this format.
+
+To see the request and response logs, run the command **Definition Extension: Show Request Logs**.
 
 ## Architecture
 
 ### Code structure
 
-- **src**: Extension source. The entry point and the modules shared across directories (environments, logging) sit at the top level.
+- **src**: The source code of the extension. The top level contains the entry point and the modules that the other directories use (environments and logging).
   - **auth**: Auth0 sign-in, token refresh and token storage.
   - **api**: Communication with CWS.
-  - **operations**: What the view's buttons do, independent of the UI.
-  - **workspace**: Reading and writing files and directories in the open workspace.
-  - **webview**: The sidebar view and its message handling.
+  - **operations**: The operations that the buttons in the view start. These operations do not use the UI.
+  - **workspace**: Read and write operations on the files and directories in the workspace.
+  - **webview**: The sidebar view and the messages that it sends and receives.
 - **media**
-  - **webview**: HTML, CSS and JS for the view, with one folder per state (`loginForm`, `signedIn`).
+  - **webview**: The HTML, CSS and JS files for the view. There is one folder for each state (`loginForm`, `signedIn`).
 
 ## Environment configuration
 
-Each environment has its own settings under `definitionExtension.stage.*` and `definitionExtension.production.*`. The defaults are in `contributes.configuration` in `package.json`, and you can override them in VS Code settings:
+Each environment has its own settings in `definitionExtension.stage.*` and `definitionExtension.production.*`. The default values are in `contributes.configuration` in `package.json`. You can change these values in the VS Code settings.
 
 | Setting | Description |
 |---|---|
-| `auth0Domain` | Auth0 tenant domain. A value starting with `http` is used as-is, e.g. for a local mock server. |
-| `auth0ClientId` | Auth0 application Client ID. |
-| `auth0Audience` | Auth0 API identifier. Required to get a JWT access token. |
-| `auth0Scope` | OAuth scopes. Include `offline_access` to get a refresh token. |
-| `redirectUri` | OAuth `redirect_uri`. Must be an Allowed Callback URL in Auth0. |
-| `apiBaseUrl` | CWS base URL. |
+| `auth0Domain` | The domain of the Auth0 tenant. If the value starts with `http`, the extension uses the value as it is. Use this for a local mock server. |
+| `auth0ClientId` | The Client ID of the Auth0 application. |
+| `auth0Audience` | The identifier of the Auth0 API. This value is necessary to receive a JWT access token. |
+| `auth0Scope` | The OAuth scopes. To receive a refresh token, include `offline_access`. |
+| `redirectUri` | The OAuth `redirect_uri`. This value must be an Allowed Callback URL in Auth0. |
+| `apiBaseUrl` | The base URL of CWS. |
 
-`definitionExtension.callbackPort` (default `42813`) is the port the loopback server listens on. Both environments share it.
+`definitionExtension.callbackPort` is the port of the loopback server. The default value is `42813`. The two environments use the same port.
+
+> **Note:** If a necessary setting is empty, the sign-in stops and the extension shows an error.
 
 ## Authentication
 
-The identity provider is [Auth0](https://auth0.com/). Sign-in uses the Authorization Code flow with PKCE:
+The identity provider is [Auth0](https://auth0.com/). The sign-in uses the Authorization Code flow with PKCE:
 
-1. The extension starts a loopback server on `127.0.0.1:<callbackPort>` and opens the Auth0 `/authorize` page in the browser.
-2. Auth0 redirects to `redirectUri`, which is the admin app's `/extension/redirect` page. That page passes the `code` and `state` on to the loopback server.
-3. The extension checks `state` and exchanges the code for tokens at `/oauth/token`.
+1. The extension starts a loopback server on `127.0.0.1:<callbackPort>`. Then it opens the Auth0 `/authorize` page in the browser.
+2. Auth0 sends the browser to `redirectUri`. This is the `/extension/redirect` page of the admin app. This page sends the `code` and the `state` to the loopback server.
+3. The extension makes sure that the `state` is correct. Then it sends the code to `/oauth/token` and receives the tokens.
 
-Tokens are stored per environment, so you can be signed in to Stage and Production at the same time.
+If the loopback server does not receive the code in 120 seconds, the sign-in stops. If you start a new sign-in, the extension stops the previous sign-in.
+
+The extension keeps the tokens for each environment separately. Thus, you can be signed in to Stage and Production at the same time.
