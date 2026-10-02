@@ -170,8 +170,15 @@ export class AuthService {
 
     if (!response.ok) {
       outputChannel.appendLine(`    error body: ${await response.text()}`);
-      await this.logout();
-      throw new Error(`Token refresh failed with status ${response.status}.`);
+      // Auth0 answers a revoked, expired or reused refresh token with 400/401/403;
+      // only then is signing in again the fix. On 429 and 5xx the refresh token is
+      // still valid, so keep it and let the user retry.
+      const rejected = response.status >= 400 && response.status < 500 && response.status !== 429;
+      if (rejected) {
+        await this.logout();
+        throw new Error(`Session expired (status ${response.status}). Please sign in again.`);
+      }
+      throw new Error(`Token refresh failed with status ${response.status}. Please try again.`);
     }
 
     const tokens = (await response.json()) as TokenResponse;
