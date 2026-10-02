@@ -3,6 +3,7 @@ import type { StorykitApi } from "../api/storykitApi";
 import type { IVideoSlideDefinition, SlideDefinitionType } from "../api/types";
 import { logMessage } from "../logging";
 import type { JsonWriter } from "../workspace/jsonWriter";
+import { getWorkspaceRoot } from "../workspace/workspaceRoot";
 
 /** Everything fetched from cws that a definition lookup needs. Fetch once, reuse across type names. */
 export interface DefinitionCatalog {
@@ -22,10 +23,7 @@ function findDefinitionByTypeName(
   { definitionTypes, definitions }: DefinitionCatalog,
   typeName: string,
 ): { dirUri: vscode.Uri; definition: IVideoSlideDefinition } {
-  const root = vscode.workspace.workspaceFolders?.[0];
-  if (!root) {
-    throw new Error("No workspace folder open.");
-  }
+  const root = getWorkspaceRoot();
 
   const definitionType = definitionTypes.find((type) => type.name === typeName);
   logMessage(`Looking for definition type named "${typeName}" out of ${definitionTypes.length} available types.`);
@@ -46,7 +44,7 @@ function findDefinitionByTypeName(
   }
   logMessage(`Found definition: ${JSON.stringify({ id: definition._id }, null, 2)}`);
 
-  return { dirUri: vscode.Uri.joinPath(root.uri, typeName), definition };
+  return { dirUri: vscode.Uri.joinPath(root, typeName), definition };
 }
 
 export async function exportDefinitionByTypeName(

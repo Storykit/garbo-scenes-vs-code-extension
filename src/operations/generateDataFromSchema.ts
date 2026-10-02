@@ -1,14 +1,12 @@
 import * as vscode from "vscode";
 import { createDefaultDataFromDataSchema } from "./generateSchemaDefaults";
 import type { JsonWriter } from "../workspace/jsonWriter";
+import { getWorkspaceRoot } from "../workspace/workspaceRoot";
 
 export async function generateDataFromSchema(dirName: string, writer: JsonWriter): Promise<void> {
-  const root = vscode.workspace.workspaceFolders?.[0];
-  if (!root) {
-    throw new Error("No workspace folder open.");
-  }
+  const root = getWorkspaceRoot();
 
-  const dirUri = vscode.Uri.joinPath(root.uri, dirName);
+  const dirUri = vscode.Uri.joinPath(root, dirName);
   const schemaUri = vscode.Uri.joinPath(dirUri, "dataSchema.json");
 
   let bytes: Uint8Array;
