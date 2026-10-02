@@ -28,10 +28,11 @@ declare module "axios" {
  * once via refresh() on a 401 before giving up.
  */
 export function createApiClient(authService: AuthService, environment: Environment): AxiosInstance {
-  const config = vscode.workspace.getConfiguration(`definitionExtension.${environment}`);
-  const client = axios.create({ baseURL: config.get<string>("apiBaseUrl") });
+  const client = axios.create();
 
   client.interceptors.request.use(async (req) => {
+    // Read per request so a changed setting applies without reloading the window.
+    req.baseURL = vscode.workspace.getConfiguration(`definitionExtension.${environment}`).get<string>("apiBaseUrl");
     const token = await authService.getAccessToken();
     if (token) {
       req.headers.Authorization = `Bearer ${token}`;
