@@ -4,3 +4,6 @@ src/**
 tsconfig.json
 **/*.map
 node_modules/**
+.claude/**
+eslint.config.js
+*.vsix

@@ -3,10 +3,22 @@
   "tasks": [
     {
       "type": "npm",
-      "script": "compile",
-      "group": { "kind": "build", "isDefault": true },
+      "script": "typecheck",
       "problemMatcher": ["$tsc"],
       "presentation": { "reveal": "silent" }
+    },
+    {
+      "type": "npm",
+      "script": "compile",
+      "problemMatcher": [],
+      "presentation": { "reveal": "silent" }
+    },
+    {
+      "label": "build",
+      "dependsOn": ["npm: typecheck", "npm: compile"],
+      "dependsOrder": "sequence",
+      "group": { "kind": "build", "isDefault": true },
+      "problemMatcher": []
     }
   ]
 }

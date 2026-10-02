@@ -18,7 +18,7 @@ Run `npm run watch` to rebuild on change, then reload the Extension Development 
 
 ### Build
 
-Run `npm run compile` to bundle the extension with esbuild. The output is `dist/extension.js`.
+Run `npm run compile` to bundle the extension with esbuild. The output is `dist/extension.js`. esbuild does not check types, so run `npm run typecheck` (`tsc --noEmit`) as well. The default build task (`F5`) and `npm run package` run both.
 
 Run `npm run package` to build a `.vsix`. This requires [vsce](https://github.com/microsoft/vscode-vsce) (`npm i -g @vscode/vsce`).
 

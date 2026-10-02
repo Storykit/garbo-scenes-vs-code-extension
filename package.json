@@ -1,8 +1,13 @@
 {
   "name": "definition-extension",
   "displayName": "Definition Extension",
-  "description": "VS Code extension boilerplate with JWT-based authentication",
+  "description": "Fetch slide definitions from Storykit CWS and write them into garbo-scenes directories as JSON.",
   "version": "0.0.1",
+  "publisher": "storykit",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Storykit/definition-extension.git"
+  },
   "engines": {
     "vscode": "^1.85.0"
   },
@@ -109,7 +114,8 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile",
+    "vscode:prepublish": "npm run typecheck && npm run compile",
+    "typecheck": "tsc --noEmit",
     "compile": "esbuild ./src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node",
     "watch": "npm run compile -- --watch",
     "package": "vsce package",
