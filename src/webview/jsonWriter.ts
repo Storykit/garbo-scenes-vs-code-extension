@@ -16,8 +16,9 @@ async function isMissingOrEmpty(fileUri: vscode.Uri): Promise<boolean> {
 const INDENT = 4;
 
 /**
- * Writes pretty-printed JSON files and records which were written and which
- * were skipped. With onlyIfEmpty, a file that already exists with content is
+ * Writes pretty-printed JSON files, creating parent directories only when a
+ * file is actually written, and records which were written and which were
+ * skipped. With onlyIfEmpty, a file that already exists with content is
  * left untouched.
  */
 export class JsonWriter {
@@ -31,6 +32,7 @@ export class JsonWriter {
       this.skipped.push(fileUri.fsPath);
       return;
     }
+    await vscode.workspace.fs.createDirectory(vscode.Uri.joinPath(fileUri, ".."));
     await vscode.workspace.fs.writeFile(fileUri, new TextEncoder().encode(JSON.stringify(data, null, INDENT)));
     this.written.push(fileUri.fsPath);
   }

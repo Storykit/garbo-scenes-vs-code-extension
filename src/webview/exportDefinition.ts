@@ -18,17 +18,14 @@ export async function fetchDefinitionCatalog(storykitApi: StorykitApi): Promise<
   return { definitionTypes, definitions };
 }
 
-async function findDefinitionByTypeName(
+function findDefinitionByTypeName(
   { definitionTypes, definitions }: DefinitionCatalog,
   typeName: string,
-): Promise<{ dirUri: vscode.Uri; definition: IVideoSlideDefinition }> {
+): { dirUri: vscode.Uri; definition: IVideoSlideDefinition } {
   const root = vscode.workspace.workspaceFolders?.[0];
   if (!root) {
     throw new Error("No workspace folder open.");
   }
-
-  const dirUri = vscode.Uri.joinPath(root.uri, typeName);
-  await vscode.workspace.fs.createDirectory(dirUri);
 
   const definitionType = definitionTypes.find((type) => type.name === typeName);
   logMessage(`Looking for definition type named "${typeName}" out of ${definitionTypes.length} available types.`);
@@ -46,7 +43,7 @@ async function findDefinitionByTypeName(
   }
   logMessage(`Found definition: ${JSON.stringify({ id: definition._id }, null, 2)}`);
 
-  return { dirUri, definition };
+  return { dirUri: vscode.Uri.joinPath(root.uri, typeName), definition };
 }
 
 export async function exportDefinitionByTypeName(
@@ -54,7 +51,7 @@ export async function exportDefinitionByTypeName(
   typeName: string,
   writer: JsonWriter,
 ): Promise<void> {
-  const { dirUri, definition } = await findDefinitionByTypeName(catalog, typeName);
+  const { dirUri, definition } = findDefinitionByTypeName(catalog, typeName);
 
   await writer.write(vscode.Uri.joinPath(dirUri, "dataSchema.json"), definition.dataSchema);
   await writer.write(vscode.Uri.joinPath(dirUri, "uiSchema.json"), definition.uiSchema);
@@ -65,7 +62,7 @@ export async function exportDefinitionVariablesByTypeName(
   typeName: string,
   writer: JsonWriter,
 ): Promise<void> {
-  const { dirUri, definition } = await findDefinitionByTypeName(catalog, typeName);
+  const { dirUri, definition } = findDefinitionByTypeName(catalog, typeName);
   if (definition.variables === undefined) {
     throw new Error(`Definition for type "${typeName}" has no variables.`);
   }
