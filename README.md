@@ -61,7 +61,7 @@ Each operation uses one scene directory. The name of a scene directory is the sa
 
 You can use these options:
 
-- **All top-level directories**: The extension does the operation on all scene directories. It does not use hidden directories, `node_modules`, `00_TEMPLATE`, `01_LOCAL_BACKGROUND`, `background` and `shared_modules`. If the operation fails in one directory, the extension continues in the other directories.
+- **All top-level directories**: The extension does the operation on all scene directories. It does not use hidden directories, `00_TEMPLATE`, `01_LOCAL_BACKGROUND`, `background` and `shared_modules`. If the operation fails in one directory, the extension continues in the other directories.
 - **Only write if empty**: The extension does not change files that have content. To overwrite these files, clear this option.
 
 The extension writes JSON with an indent of 4 spaces and no newline at the end of the file. Approximately 90% of the JSON files in garbo-scenes use this format.

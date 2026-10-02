@@ -2,7 +2,6 @@ import * as vscode from 'vscode';
 import { getWorkspaceRoot } from './workspaceRoot';
 
 const EXCLUDED_DIRECTORIES = new Set([
-  'node_modules',
   '00_TEMPLATE',
   '01_LOCAL_BACKGROUND',
   'background',
