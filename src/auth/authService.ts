@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { waitForCallback } from "./loopbackServer";
 import { createPkcePair, createState } from "./pkce";
-import { outputChannel, logRequest, logResponse } from "../logging";
+import { logRequest, logResponse, logMessage, logErrorBody } from "../logging";
 import type { Environment } from "../environment";
 
 interface TokenResponse {
@@ -95,13 +95,13 @@ export class AuthService {
     if (auth0.audience) {
       authorizeUrl.searchParams.set("audience", auth0.audience);
     }
-    outputChannel.appendLine(
+    logMessage(
       `--> opening browser: ${authorizeUrl.origin}${authorizeUrl.pathname} (client_id=${auth0.clientId}, audience=${auth0.audience ?? "(none)"})`,
     );
     await vscode.env.openExternal(vscode.Uri.parse(authorizeUrl.toString()));
 
     const { code, state: returnedState } = await result;
-    outputChannel.appendLine(
+    logMessage(
       `<-- callback received: code=${redact(code)} state ${returnedState === state ? "ok" : "MISMATCH"}`,
     );
     if (returnedState !== state) {
@@ -124,7 +124,7 @@ export class AuthService {
     logResponse("POST", tokenUrl, tokenResponse.status, startedAt);
 
     if (!tokenResponse.ok) {
-      outputChannel.appendLine(`    error body: ${await tokenResponse.text()}`);
+      logErrorBody(await tokenResponse.text());
       throw new Error(`Token exchange failed with status ${tokenResponse.status}.`);
     }
 
@@ -169,7 +169,7 @@ export class AuthService {
     logResponse("POST", tokenUrl, response.status, startedAt);
 
     if (!response.ok) {
-      outputChannel.appendLine(`    error body: ${await response.text()}`);
+      logErrorBody(await response.text());
       // Auth0 answers a revoked, expired or reused refresh token with 400/401/403;
       // only then is signing in again the fix. On 429 and 5xx the refresh token is
       // still valid, so keep it and let the user retry.

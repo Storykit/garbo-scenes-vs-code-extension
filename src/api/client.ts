@@ -2,18 +2,7 @@ import * as vscode from "vscode";
 import axios, { type AxiosInstance } from "axios";
 import type { AuthService } from "../auth/authService";
 import type { Environment } from "../environment";
-import { outputChannel, logRequest, logResponse, logError } from "../logging";
-
-function formatBody(data: unknown): string {
-  if (typeof data === "string") {
-    return data.slice(0, 2000);
-  }
-  try {
-    return JSON.stringify(data).slice(0, 2000);
-  } catch {
-    return String(data);
-  }
-}
+import { logRequest, logResponse, logError, logErrorBody } from "../logging";
 
 // Bookkeeping fields the interceptors attach to each request config.
 declare module "axios" {
@@ -63,7 +52,7 @@ export function createApiClient(authService: AuthService, environment: Environme
 
       if (error.response) {
         logResponse(method, url, error.response.status, startedAt);
-        outputChannel.appendLine(`    error body: ${formatBody(error.response.data)}`);
+        logErrorBody(error.response.data);
       } else {
         logError(method, url, error, startedAt);
       }

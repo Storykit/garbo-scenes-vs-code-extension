@@ -18,3 +18,20 @@ export function logError(method: string, url: string, err: unknown, startedAt: n
 export function logMessage(message: string): void {
   outputChannel.appendLine(message);
 }
+
+const MAX_BODY_LENGTH = 2000;
+
+/** Logs a failed response's body, truncated so large payloads don't flood the channel. */
+export function logErrorBody(body: unknown): void {
+  let text: string;
+  if (typeof body === "string") {
+    text = body;
+  } else {
+    try {
+      text = JSON.stringify(body);
+    } catch {
+      text = String(body);
+    }
+  }
+  outputChannel.appendLine(`    error body: ${text.slice(0, MAX_BODY_LENGTH)}`);
+}
