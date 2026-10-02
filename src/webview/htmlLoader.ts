@@ -1,10 +1,10 @@
 import * as vscode from 'vscode';
 
 /**
- * Loads media/webview/<componentDir>/index.html and resolves its
- * {{styleUri}} / {{scriptUri}} placeholders against the sibling
- * style.css / script.js via the webview's asWebviewUri, plus any
- * caller-supplied {{key}} placeholders.
+ * Loads media/webview/<componentDir>/index.html and fills its {{key}}
+ * placeholders: {{styleUri}} / {{scriptUri}} point at the sibling
+ * style.css / script.js via the webview's asWebviewUri, {{cspSource}} is the
+ * webview's CSP source, and any other key comes from extraReplacements.
  */
 export async function loadComponentHtml(
   webview: vscode.Webview,
@@ -21,19 +21,27 @@ export async function loadComponentHtml(
   const bytes = await vscode.workspace.fs.readFile(
     vscode.Uri.joinPath(dirUri, 'index.html')
   );
-  const styleUri = webview.asWebviewUri(
-    vscode.Uri.joinPath(dirUri, 'style.css')
-  );
-  const scriptUri = webview.asWebviewUri(
-    vscode.Uri.joinPath(dirUri, 'script.js')
-  );
+  const replacements: Record<string, string> = {
+    styleUri: webview
+      .asWebviewUri(vscode.Uri.joinPath(dirUri, 'style.css'))
+      .toString(),
+    scriptUri: webview
+      .asWebviewUri(vscode.Uri.joinPath(dirUri, 'script.js'))
+      .toString(),
+    cspSource: webview.cspSource,
+    ...extraReplacements,
+  };
 
-  let html = new TextDecoder()
+  // A replacer function replaces every occurrence and keeps `$` in values
+  // literal; an unknown key is a template bug, so fail loudly.
+  return new TextDecoder()
     .decode(bytes)
-    .replace('{{styleUri}}', styleUri.toString())
-    .replace('{{scriptUri}}', scriptUri.toString());
-  for (const [key, value] of Object.entries(extraReplacements)) {
-    html = html.replace(`{{${key}}}`, value);
-  }
-  return html;
+    .replace(/\{\{(\w+)\}\}/g, (_match, key: string) => {
+      if (!Object.hasOwn(replacements, key)) {
+        throw new Error(
+          `Unknown placeholder {{${key}}} in ${componentDir}/index.html.`
+        );
+      }
+      return replacements[key];
+    });
 }
