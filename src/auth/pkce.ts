@@ -1,24 +1,16 @@
 import { createHash, randomBytes } from 'node:crypto';
 
-function base64url(input: Buffer): string {
-  return input
-    .toString('base64')
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-    .replace(/=+$/, '');
-}
-
 export interface PkcePair {
   verifier: string;
   challenge: string;
 }
 
 export function createPkcePair(): PkcePair {
-  const verifier = base64url(randomBytes(32));
-  const challenge = base64url(createHash('sha256').update(verifier).digest());
+  const verifier = randomBytes(32).toString('base64url');
+  const challenge = createHash('sha256').update(verifier).digest('base64url');
   return { verifier, challenge };
 }
 
 export function createState(): string {
-  return base64url(randomBytes(16));
+  return randomBytes(16).toString('base64url');
 }
