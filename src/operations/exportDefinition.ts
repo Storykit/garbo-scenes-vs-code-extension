@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import type { StorykitApi } from "../api/storykitApi";
 import type { IVideoSlideDefinition, SlideDefinitionType } from "../api/types";
 import { logMessage } from "../logging";
-import type { JsonWriter } from "./jsonWriter";
+import type { JsonWriter } from "../workspace/jsonWriter";
 
 /** Everything fetched from cws that a definition lookup needs. Fetch once, reuse across type names. */
 export interface DefinitionCatalog {

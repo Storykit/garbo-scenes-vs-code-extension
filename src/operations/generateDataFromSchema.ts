@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
-import { createDefaultDataFromDataSchema } from "./helpers";
-import type { JsonWriter } from "./jsonWriter";
+import { createDefaultDataFromDataSchema } from "./generateSchemaDefaults";
+import type { JsonWriter } from "../workspace/jsonWriter";
 
 export async function generateDataFromSchema(dirName: string, writer: JsonWriter): Promise<void> {
   const root = vscode.workspace.workspaceFolders?.[0];

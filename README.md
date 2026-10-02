@@ -49,22 +49,12 @@ Request and response logs are available through the command **Definition Extensi
 
 ### Code structure
 
-- **src**
-  - **extension.ts**: Entry point. Creates one auth service and one API client per environment, then registers the view and commands.
-  - **environment.ts**: The available environments (`stage`, `production`).
-  - **logging.ts**: The output channel and request logging helpers.
-  - **auth**: Auth0 sign-in.
-    - **authService.ts**: Authorization Code + PKCE flow, token refresh, and token storage in VS Code `SecretStorage` (keyed per environment).
-    - **loopbackServer.ts**: One-shot local HTTP server that receives the authorization code.
-    - **pkce.ts**: PKCE verifier/challenge and state generation.
-  - **api**: CWS communication.
-    - **client.ts**: Axios instance that attaches the access token and retries once after a refresh on 401.
-    - **storykitApi.ts**: Facade over auth actions and CWS endpoints.
-    - **types.ts**: API types.
-  - **webview**: The sidebar view and the operations it runs.
-    - **accountViewProvider.ts**: Renders the view, handles its messages and runs operations.
-    - **exportDefinition.ts**, **generateDataFromSchema.ts**: The operations.
-    - **jsonWriter.ts**: Writes the JSON files and tracks which were written or skipped.
+- **src**: Extension source. The entry point and the modules shared across directories (environments, logging) sit at the top level.
+  - **auth**: Auth0 sign-in, token refresh and token storage.
+  - **api**: Communication with CWS.
+  - **operations**: What the view's buttons do, independent of the UI.
+  - **workspace**: Reading and writing files and directories in the open workspace.
+  - **webview**: The sidebar view and its message handling.
 - **media**
   - **webview**: HTML, CSS and JS for the view, with one folder per state (`loginForm`, `signedIn`).
 

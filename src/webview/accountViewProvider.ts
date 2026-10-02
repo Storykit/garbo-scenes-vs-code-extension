@@ -7,11 +7,11 @@ import {
   exportDefinitionByTypeName,
   exportDefinitionVariablesByTypeName,
   fetchDefinitionCatalog,
-} from "./exportDefinition";
-import { generateDataFromSchema } from "./generateDataFromSchema";
-import { inferNameFromActiveFile } from "./inferNameFromActiveFile";
-import { JsonWriter } from "./jsonWriter";
-import { listTopLevelDirectories } from "./listTopLevelDirectories";
+} from "../operations/exportDefinition";
+import { generateDataFromSchema } from "../operations/generateDataFromSchema";
+import { inferNameFromActiveFile } from "../workspace/inferNameFromActiveFile";
+import { JsonWriter } from "../workspace/jsonWriter";
+import { listTopLevelDirectories } from "../workspace/listTopLevelDirectories";
 
 type Operation = "exportDefinition" | "exportVariables" | "generateData";
 
