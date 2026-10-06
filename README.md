@@ -25,7 +25,8 @@ To rebuild the extension when you change the code:
 
 - To bundle the extension, run `npm run compile`. This command uses esbuild and writes `dist/extension.js`.
 - esbuild does not do a type check. To do a type check, run `npm run typecheck` (`tsc --noEmit`).
-- To make a `.vsix` package, run `npm run package`. Before you do this, install [vsce](https://github.com/microsoft/vscode-vsce) (`npm i -g @vscode/vsce`).
+- make sure you have [vsce](https://github.com/microsoft/vscode-vsce) (`npm i -g @vscode/vsce`) installed.
+- To make a `.vsix` package, run `npm run package`.
 
 > **Note:** The default build task (`F5`) and `npm run package` do the type check and the bundle.
 
